@@ -2646,13 +2646,13 @@ int ide_init_drive(IDEState *s, IDEDevice *dev, IDEDriveKind kind, Error **errp)
     } else {
         switch (kind) {
         case IDE_CD:
-            strcpy(s->drive_model_str, "QEMU DVD-ROM");
+            strcpy(s->drive_model_str, "NIMBUS DVD-ROM");
             break;
         case IDE_CFATA:
-            strcpy(s->drive_model_str, "QEMU MICRODRIVE");
+            strcpy(s->drive_model_str, "NIMBUS MICRODRIVE");
             break;
         default:
-            strcpy(s->drive_model_str, "QEMU HARDDISK");
+            strcpy(s->drive_model_str, "NIMBUS HARDDISK");
             break;
         }
     }
