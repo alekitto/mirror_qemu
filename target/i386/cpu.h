@@ -443,9 +443,11 @@ typedef enum X86Seg {
 #define MSR_MTRRcap_FIXRANGE_SUPPORT    (1 << 8)
 #define MSR_MTRRcap_WC_SUPPORTED        (1 << 10)
 
+#define MSR_IA32_TEMPERATURE_TARGET     0x1A2
 #define MSR_IA32_SYSENTER_CS            0x174
 #define MSR_IA32_SYSENTER_ESP           0x175
 #define MSR_IA32_SYSENTER_EIP           0x176
+#define MSR_IA32_THERM_STATUS           0x19C
 
 #define MSR_MCG_CAP                     0x179
 #define MSR_MCG_STATUS                  0x17a

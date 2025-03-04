@@ -2619,6 +2619,28 @@ static bool kvm_rdmsr_core_thread_count(X86CPU *cpu,
     return true;
 }
 
+static bool kvm_rdmsr_temp_target(X86CPU *cpu,
+                                   uint32_t msr,
+                                   uint64_t *val)
+{
+    *val = 1 << 31; /* valid flag */
+    *val |= ((uint32_t)1 << 27); /* 1 degree celsius resolution */
+    *val |= ((uint32_t)91 << 16); /* 91 degrees */
+
+    return true;
+}
+
+static bool kvm_rdmsr_therm_status(X86CPU *cpu,
+                                   uint32_t msr,
+                                   uint64_t *val)
+{
+    *val = 1 << 31; /* valid flag */
+    *val |= ((uint32_t)1 << 27); /* 1 degree celsius resolution */
+    *val |= ((uint32_t)66 << 16); /* 66 degrees below thermal throttling (see MSR_TEMPERATURE_TARGET handler) */
+
+    return true;
+}
+
 static bool kvm_rdmsr_rapl_power_unit(X86CPU *cpu,
                                       uint32_t msr,
                                       uint64_t *val)
@@ -3153,6 +3175,22 @@ static int kvm_vm_enable_userspace_msr(KVMState *s)
     if (ret < 0) {
         error_report("Could not install MSR_CORE_THREAD_COUNT handler: %s",
                      strerror(-ret));
+        exit(1);
+    }
+
+	ret = kvm_filter_msr(s, MSR_IA32_TEMPERATURE_TARGET,
+                        kvm_rdmsr_temp_target, NULL);
+
+    if (ret < 0) {
+        error_report("Could not install MSR_IA32_TEMPERATURE_TARGET handler: %s", strerror(-ret));
+        exit(1);
+    }
+
+	ret = kvm_filter_msr(s, MSR_IA32_THERM_STATUS,
+                        kvm_rdmsr_therm_status, NULL);
+
+    if (ret < 0) {
+        error_report("Could not install MSR_IA32_THERM_STATUS handler: %s", strerror(-ret));
         exit(1);
     }
 
