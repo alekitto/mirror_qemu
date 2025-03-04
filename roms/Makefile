@@ -131,6 +131,25 @@ build-efi-roms: build-pxe-roms
 		CROSS_COMPILE=$(x86_64_cross_prefix) \
 		$(patsubst %,bin-x86_64-efi/%.efidrv,$(pxerom_targets))
 
+# Build scripts can pass compiler/linker flags to the EDK2
+# build tools via the EDK2_BASETOOLS_OPTFLAGS (CFLAGS) and
+# EDK2_BASETOOLS_LDFLAGS (LDFLAGS) environment variables.
+#
+# Example:
+#
+#  make -C roms \
+#    EDK2_BASETOOLS_OPTFLAGS='...' \
+#    EDK2_BASETOOLS_LDFLAGS='...' \
+#    efirom
+#
+edk2-basetools:
+	cd edk2/BaseTools && git submodule update --init --force \
+		Source/C/BrotliCompress/brotli
+	$(MAKE) -C edk2/BaseTools \
+		PYTHON_COMMAND=$${EDK2_PYTHON_COMMAND:-python3} \
+		EXTRA_OPTFLAGS='$(EDK2_BASETOOLS_OPTFLAGS)' \
+		EXTRA_LDFLAGS='$(EDK2_BASETOOLS_LDFLAGS)'
+
 slof:
 	$(MAKE) -C SLOF CROSS=$(powerpc64_cross_prefix) qemu
 	cp SLOF/boot_rom.bin ../pc-bios/slof.bin
